@@ -42,13 +42,14 @@ $(document).ready(function() {
         });
         $("#fb-sync").click(function(e) {
             $("#fb-perms, #fb-sync").prop("disabled", true);
-            $("#fb-status").removeClass("alert-info").addClass("alert-warning").text("Fetching from Facebook...");
+            $("#fb-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Fetching from Facebook...");
             chrome.cookies.get({
                 url: "https://www.facebook.com",
                 name: "c_user"
             }, function(cookie) {
                 if (!cookie) {
-                    $("#fb-sync").prop("disabled", false).find("span").text("No cookie found, are you logged in?");
+                    $("#fb-perms, #fb-sync").prop("disabled", false);
+                    $("#fb-status").removeClass("alert-warning").addClass("alert-danger").text("No cookie found, are you logged in?");
                     return;
                 }
                 $.ajax({

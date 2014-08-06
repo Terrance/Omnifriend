@@ -14,7 +14,7 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
             var desc = friends[i].name.substr(0, index)
                      + "<match>" + friends[i].name.substr(index, text.length) + "</match>"
                      + friends[i].name.substr(index + text.length)
-                     + "  <url>" + friends[i].url + "</url>";
+                     + "  <url>Facebook</url>";
             var match = {
                 content: friends[i].url,
                 description: desc.replace(/&/g, "&amp;")
