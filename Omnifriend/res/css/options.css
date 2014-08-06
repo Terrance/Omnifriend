@@ -4,6 +4,9 @@
 .jumbotron h1 {
     font-size: 48px;
 }
+h1 img {
+    vertical-align: top;
+}
 .btn + .btn {
     margin-right: 5px;
 }

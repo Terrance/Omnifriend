@@ -18,7 +18,9 @@
         "storage"
     ],
     "optional_permissions": [
-        "https://www.facebook.com/"
+        "https://www.facebook.com/",
+        "https://twitter.com/",
+        "https://mobile.twitter.com/"
     ],
     "icons": {
         "16": "res/img/icon-16.png",
