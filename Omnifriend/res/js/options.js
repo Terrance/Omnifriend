@@ -62,6 +62,7 @@ $(document).ready(function() {
                         $.each(resp.payload.entries, function(i, friend) {
                             friends.push({
                                 name: friend.names.shift() + (friend.names.length ? " (" + friend.names.join(", ") + ")" : ""),
+                                user: friend.uid.toString(),
                                 url: "https://www.facebook.com" + friend.path
                             });
                         });
@@ -145,7 +146,8 @@ $(document).ready(function() {
                                     $(".ProfileNameTruncated-link", resp.items_html).each(function(i, follow) {
                                         var user = follow.href.split("/").pop();
                                         follows.push({
-                                            name: follow.text.trim() + " (@" + user + ")",
+                                            name: follow.text.trim(),
+                                            user: user,
                                             url: "https://twitter.com/" + user
                                         });
                                     });
@@ -253,6 +255,7 @@ $(document).ready(function() {
                                     var user = resp[0][2][i];
                                     circled.push({
                                         name: user[2][0],
+                                        user: user[0][2],
                                         url: "https://plus.google.com/" + user[0][2]
                                     });
                                 }
