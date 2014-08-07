@@ -20,7 +20,8 @@
     "optional_permissions": [
         "https://www.facebook.com/",
         "https://twitter.com/",
-        "https://mobile.twitter.com/"
+        "https://mobile.twitter.com/",
+        "https://plus.google.com/"
     ],
     "icons": {
         "16": "res/img/icon-16.png",

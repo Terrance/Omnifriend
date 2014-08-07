@@ -7,9 +7,10 @@ chrome.omnibox.onInputStarted.addListener(function() {
     chrome.storage.local.get(function(store) {
         var srcs = {
             "fb": "Facebook",
-            "tw": "Twitter"
+            "tw": "Twitter",
+            "gp": "Google+"
         };
-        ["fb-friends", "tw-follows"].map(function(key, i, arr) {
+        ["fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
             if (store[key]) {
                 var src = srcs[key.substr(0, 2)];
                 for (var j in store[key]) store[key][j].src = src;
