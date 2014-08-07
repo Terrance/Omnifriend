@@ -5,7 +5,7 @@ $(document).ready(function() {
         for (var i in params) {
             var parts = params[i].split("=");
             if (parts[0] === "q") {
-                query = parts[1];
+                query = decodeURIComponent(parts[1]);
                 break;
             }
         }
@@ -15,6 +15,7 @@ $(document).ready(function() {
         $("#alert").addClass("alert-danger").text("No query specified!");
         return;
     }
+    document.title = "Search: " + query;
     chrome.storage.local.get(function(store) {
         var friends = [];
         var icons = ["facebook", "twitter", "google-plus"];

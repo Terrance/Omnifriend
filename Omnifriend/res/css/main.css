@@ -4,12 +4,16 @@
 .jumbotron h1 {
     font-size: 48px;
 }
+.jumbotron p {
+    margin-top: 30px;
+}
 h1 img {
     vertical-align: top;
+    margin-right: -5px;
 }
 .btn + .btn {
     margin-right: 5px;
 }
-h2 a {
-
+footer {
+    margin-top: 20px;
 }
