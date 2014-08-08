@@ -3,9 +3,7 @@
 }
 .jumbotron h1 {
     font-size: 48px;
-}
-.jumbotron p {
-    margin-top: 30px;
+    margin-bottom: 30px;
 }
 h1 img {
     vertical-align: top;
@@ -13,6 +11,9 @@ h1 img {
 }
 .btn + .btn {
     margin-right: 5px;
+}
+#query {
+    width: auto;
 }
 footer {
     margin-top: 20px;
