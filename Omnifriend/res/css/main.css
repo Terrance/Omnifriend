@@ -15,6 +15,14 @@ h1 img {
 #query {
     width: auto;
 }
+#results {
+    margin-bottom: 30px;
+}
 footer {
-    margin-top: 20px;
+    margin: 20px 0;
+}
+footer span + span:before {
+    padding: 0 10px 0 5px;
+    content: "\002022";
+    color: #999;
 }

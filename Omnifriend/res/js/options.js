@@ -62,7 +62,7 @@ $(document).ready(function() {
                         $.each(resp.payload.entries, function(i, friend) {
                             friends.push({
                                 name: friend.names.shift() + (friend.names.length ? " (" + friend.names.join(", ") + ")" : ""),
-                                user: friend.uid.toString(),
+                                id: friend.uid.toString(),
                                 url: "https://www.facebook.com" + friend.path
                             });
                         });
@@ -253,11 +253,17 @@ $(document).ready(function() {
                                 resp = JSON.parse(resp);
                                 for (var i in resp[0][2]) {
                                     var user = resp[0][2][i];
-                                    circled.push({
+                                    var obj = {
                                         name: user[2][0],
-                                        user: user[0][2],
+                                        id: user[0][2],
                                         url: "https://plus.google.com/" + user[0][2]
-                                    });
+                                    };
+                                    // extract alternative name
+                                    if (match = obj.name.match(/^(.*) \(([^\)]+)\)$/)) {
+                                        obj.name = match[1];
+                                        obj.user = match[2];
+                                    }
+                                    circled.push(obj);
                                 }
                                 chrome.storage.local.set({"gp-circled": circled}, function() {
                                     $("#gp-perms, #gp-sync").prop("disabled", false);
