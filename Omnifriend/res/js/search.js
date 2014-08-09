@@ -5,31 +5,35 @@ $(document).ready(function() {
         document.title = "Search" + (query ? ": " + query : "");
         $("#query").val(query);
         var matches = [];
-        $("#results").empty();
-        for (var i in friends) {
-            var index = friends[i].name.toLowerCase().indexOf(query.toLowerCase());
+        $("#networks li").hide();
+        $("#networks-all, #networks li.active").show();
+        $("#results").empty().show();
+        var active = $("#networks li.active").attr("id").substr(9);
+        $(friends).each(function(i, friend) {
+            var index = friend.name.toLowerCase().indexOf(query.toLowerCase());
             var match = index > -1;
-            if (!match && friends[i].user) match = friends[i].user.toLowerCase().indexOf(query.toLowerCase()) > -1;
-            if (!match && friends[i].id) friends[i].id.toLowerCase().indexOf(query.toLowerCase()) > -1;
+            if (!match && friend.user) match = friend.user.toLowerCase().indexOf(query.toLowerCase()) > -1;
+            if (!match && friend.id) friend.id.toLowerCase().indexOf(query.toLowerCase()) > -1;
             if (match) {
-                var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friends[i].label);
-                var name = $("<a/>").attr("href", friends[i].url);
+                var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friend.label);
+                var name = $("<a/>").attr("href", friend.url);
                 if (index > -1) {
-                    name.append($("<span/>").text(friends[i].name.substr(0, index)))
-                            .append($("<strong/>").text(friends[i].name.substr(index, query.length)))
-                            .append($("<span/>").text(friends[i].name.substr(index + query.length)))
-                } else name.text(friends[i].name);
-                var user = (friends[i].user ? $("<small/>").text(friends[i].user) : null);
+                    name.append($("<span/>").text(friend.name.substr(0, index)))
+                            .append($("<strong/>").text(friend.name.substr(index, query.length)))
+                            .append($("<span/>").text(friend.name.substr(index + query.length)))
+                } else name.text(friend.name);
+                var user = (friend.user ? $("<small/>").text(friend.user) : null);
                 cell.append($("<h3/>")
-                        .append($("<i/>").addClass("text-muted fa fa-" + friends[i].label)).append(" ")
+                        .append($("<i/>").addClass("text-muted fa fa-" + friend.label)).append(" ")
                         .append(name).append(" ").append(user)
                     );
+                $("#networks-" + friend.label).show();
+                if (active !== "all" && active !== friend.label) cell.hide();
                 $("#results").append(cell);
             }
-        }
-        if ($("#results div").length) {
+        });
+        if ($("#results div:visible").length) {
             $("#alert").hide();
-            $("#results").show();
         } else {
             $("#results").hide();
             $("#alert").addClass("alert-info").text("No matches found.").show();

@@ -35,7 +35,7 @@ $(document).ready(function() {
                     if (success) {
                         $("#fb-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
                         $("#fb-sync").prop("disabled", true);
-                        $("#fb-status").removeClass("alert-info").addClass("alert-danger").text("No permissions to get Facebook data.");
+                        $("#fb-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Facebook.  Use \"Clear\" to remove existing friends.");
                     }
                 });
             }
@@ -122,7 +122,7 @@ $(document).ready(function() {
                     if (success) {
                         $("#tw-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
                         $("#tw-sync").prop("disabled", true);
-                        $("#tw-status").removeClass("alert-info").addClass("alert-danger").text("No permissions to get Twitter data.");
+                        $("#tw-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Twitter.  Use \"Clear\" to remove existing follows.");
                     }
                 });
             }
@@ -134,11 +134,14 @@ $(document).ready(function() {
                 // mobile site loads much faster than desktop
                 url: "https://mobile.twitter.com/settings",
                 success: function(resp, stat, xhr) {
-                    var username = $(".setting-value", resp)[14];
-                    if (username) {
-                        username = $(username).text().trim();
+                    if ($(".setting-value", resp).length > 14) {
+                        username = $($(".setting-value", resp)[14]).text().trim();
                         $("#tw-status").text("Fetching followers for " + username + "...");
-                        var follows = [];
+                        var follows = [{
+                            name: $($(".setting-value", resp)[7]).text().trim(),
+                            user: username,
+                            url: "https://twitter.com/" + username
+                        }];
                         function iter(cursor) {
                             $.ajax({
                                 url: "https://twitter.com/" + username + "/following/users" + (cursor ? "?cursor=" + cursor : ""),
@@ -223,7 +226,7 @@ $(document).ready(function() {
                     if (success) {
                         $("#gp-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
                         $("#gp-sync").prop("disabled", true);
-                        $("#gp-status").removeClass("alert-info").addClass("alert-danger").text("No permissions to get Google+ data.");
+                        $("#gp-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Google+.  Use \"Clear\" to remove existing users.");
                     }
                 });
             }

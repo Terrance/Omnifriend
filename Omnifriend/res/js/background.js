@@ -12,6 +12,11 @@ chrome.omnibox.onInputStarted.addListener(function() {
                 friends = friends.concat(store[key]);
             }
         });
+        friends.sort(function(a, b) {
+            var m = a.name.toLowerCase();
+            var n = b.name.toLowerCase();
+            return (m === n ? 0 : (m > n ? 1 : -1));
+        });
     });
 });
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
