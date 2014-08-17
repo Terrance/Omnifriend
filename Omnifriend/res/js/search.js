@@ -40,8 +40,8 @@ $(document).ready(function() {
         }
     }
     chrome.storage.local.get(function(store) {
-        var labels = ["facebook", "twitter", "google-plus"];
-        ["fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
+        var labels = ["envelope", "facebook", "twitter", "google-plus"];
+        ["em-addresses", "fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
             if (store[key]) {
                 for (var j in store[key]) store[key][j].label = labels[i];
                 friends = friends.concat(store[key]);
@@ -50,6 +50,10 @@ $(document).ready(function() {
         friends.sort(function(a, b) {
             var m = a.name.toLowerCase();
             var n = b.name.toLowerCase();
+            if (m === n) {
+                m = a.user ? a.user.toLowerCase() : "";
+                n = b.user ? b.user.toLowerCase() : "";
+            }
             return (m === n ? 0 : (m > n ? 1 : -1));
         });
         search(location.hash ? decodeURIComponent(location.hash.substr(1)) : "");

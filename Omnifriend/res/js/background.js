@@ -5,8 +5,8 @@ var friends;
 chrome.omnibox.onInputStarted.addListener(function() {
     friends = [];
     chrome.storage.local.get(function(store) {
-        var srcs = ["Facebook", "Twitter", "Google+"];
-        ["fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
+        var srcs = ["Email", "Facebook", "Twitter", "Google+"];
+        ["em-addresses", "fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
             if (store[key]) {
                 for (var j in store[key]) store[key][j].src = srcs[i];
                 friends = friends.concat(store[key]);
@@ -15,6 +15,10 @@ chrome.omnibox.onInputStarted.addListener(function() {
         friends.sort(function(a, b) {
             var m = a.name.toLowerCase();
             var n = b.name.toLowerCase();
+            if (m === n) {
+                m = a.user ? a.user.toLowerCase() : "";
+                n = b.user ? b.user.toLowerCase() : "";
+            }
             return (m === n ? 0 : (m > n ? 1 : -1));
         });
     });

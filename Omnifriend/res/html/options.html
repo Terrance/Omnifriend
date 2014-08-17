@@ -17,7 +17,49 @@
             <p>Once set up, you will be able to search for friends' profiles by typing <code>friend</code> into the Omnibox, followed by their name.  But first, you need to enable connectors below in order to cache a list of friends.</p>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div id="em" class="col-md-6">
+                <h2>
+                    <span><i class="fa fa-envelope"></i> Email</span>
+                    <button id="em-clear" class="btn btn-warning pull-right"><i class="fa fa-exclamation-triangle"></i> Clear</button>
+                    <button id="em-import" class="btn btn-primary pull-right"><i class="fa fa-folder-open"></i> Import</button>
+                </h2>
+                <div id="em-status" class="alert"></div>
+                <input id="em-file" type="file">
+            </div>
+            <div id="em-setup" class="modal fade">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">&times;</span>
+                                <span class="sr-only">Close</span>
+                            </button>
+                            <h4 class="modal-title">Import address book</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="em-col-name">Name column:</label>
+                                    <select id="em-col-name" class="form-control"></select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="em-col-email">Email column:</label>
+                                    <select id="em-col-email" class="form-control"></select>
+                                </div>
+                            </div>
+                            <label class="checkbox">
+                                <input id="em-row-header" type="checkbox" checked>
+                                <span>This CSV file contains a header row</span>
+                            </label>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="em-submit" class="btn btn-primary"><i class="fa fa-check"></i> Import</button>
+                            <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Cancel</button>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div id="fb" class="col-md-6">
                 <h2>
                     <span><i class="fa fa-facebook"></i> Facebook</span>
                     <button id="fb-clear" class="btn btn-warning pull-right"><i class="fa fa-exclamation-triangle"></i> Clear</button>
@@ -26,7 +68,7 @@
                 </h2>
                 <div id="fb-status" class="alert"></div>
             </div>
-            <div class="col-md-6">
+            <div id="tw" class="col-md-6">
                 <h2>
                     <span><i class="fa fa-twitter"></i> Twitter</span>
                     <button id="tw-clear" class="btn btn-warning pull-right"><i class="fa fa-exclamation-triangle"></i> Clear</button>
@@ -35,7 +77,7 @@
                 </h2>
                 <div id="tw-status" class="alert"></div>
             </div>
-            <div class="col-md-offset-3 col-md-6">
+            <div id="gp" class="col-md-6">
                 <h2>
                     <span><i class="fa fa-google-plus"></i> Google+</span>
                     <button id="gp-clear" class="btn btn-warning pull-right"><i class="fa fa-exclamation-triangle"></i> Clear</button>
@@ -52,6 +94,7 @@
         </footer>
         <script src="../../lib/js/jquery.min.js"></script>
         <script src="../../lib/js/bootstrap.min.js"></script>
+        <script src="../../lib/js/jquery.csv.min.js"></script>
         <script src="../js/options.js"></script>
     </body>
 </html>

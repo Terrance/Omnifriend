@@ -4,6 +4,19 @@ Introduction
 Omnifriend adds a suggestion-based search provider to Chrome's omnibox, allowing searches for friends' profiles on social networks.
 
 
+Running from source
+===================
+
+This project requires the following libraries:
+
+* [Bootstrap](http://getboostrap.com)
+* [Font Awesome](http://fontawesome.io)
+* [jQuery](http://jquery.com)
+* [jquery-csv](http://code.google.com/p/jquery-csv)
+
+Batteries are not included - the CSS and JavaScript files need to be placed in a `lib` folder with appropriate `css` and `js` subfolders (check the HTML file for where files are linked to).
+
+
 Sync providers
 ==============
 

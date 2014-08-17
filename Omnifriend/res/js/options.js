@@ -1,5 +1,73 @@
 $(document).ready(function() {
     chrome.storage.local.get(function(store) {
+        if (store["em-addresses"] && store["em-addresses"].length) {
+            $("#em-status").addClass("alert-success").text(store["em-addresses"].length + " addresses saved.");
+        } else {
+            $("#em-status").addClass("alert-info").text("Press \"Import\" to open a CSV address book.");
+            $("#em-clear").prop("disabled", true);
+        }
+        $("#em").fadeIn();
+        $("#em-import").click(function(e) {
+            $("#em-file").click();
+        });
+        $("#em-file").on("change", function(e) {
+            if (!this.files.length) return;
+            $("#em-import").prop("disabled", true);
+            $("#em-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Reading CSV file...");
+            var file = this.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var csv = e.target.result;
+                try {
+                    var contacts = $.csv.toArrays(csv);
+                    $("#em-col-name, #em-col-email").empty();
+                    for (var i in contacts[0]) {
+                        var label = contacts[0][i];
+                        $("#em-col-name, #em-col-email").append($("<option/>").text(label));
+                        if (["name", "full name"].indexOf(label.toLowerCase()) >= 0) $("#em-col-name").prop("selectedIndex", i);
+                        if (["email", "e-mail", "email address", "e-mail address", "e-mail 1 - value"].indexOf(label.toLowerCase()) >= 0)
+                            $("#em-col-email").prop("selectedIndex", i);
+                    }
+                    $("#em-setup").data("contacts", contacts).modal("show");
+                } catch (err) {
+                    $("#em-import").prop("disabled", false);
+                    $("#em-status").removeClass("alert-warning").addClass("alert-danger").html("Couldn't interpret <code>" + file.name + "</code> as CSV.");
+                }
+            };
+            reader.readAsText(file);
+        });
+        $("#em-submit").click(function(e) {
+            var contacts = $("#em-setup").data("contacts");
+            var name = $("#em-col-name").prop("selectedIndex");
+            var email = $("#em-col-email").prop("selectedIndex");
+            var header = $("#em-row-header").prop("checked");
+            var addresses = [];
+            for (var i in contacts) {
+                if ((i == 0 && header) || !contacts[i][email]) continue;
+                addresses.push({
+                    name: contacts[i][name] ? contacts[i][name] : contacts[i][email],
+                    user: contacts[i][email],
+                    url: "mailto:" + contacts[i][email]
+                });
+            }
+            chrome.storage.local.set({"em-addresses": addresses}, function() {
+                $("#em-setup").modal("hide");
+                $("#em-import, #em-clear").prop("disabled", false);
+                $("#em-status").removeClass("alert-info alert-warning").addClass("alert-success").html(addresses.length + " addresses saved.");
+            });
+        });
+        $("#em-setup").on("hide.bs.modal", function(e) {
+            $("#em-import").prop("disabled", false);
+            $("#em-status").removeClass("alert-warning").addClass("alert-info").html("Press \"Import\" to open a CSV address book.");
+        });
+        $("#em-clear").click(function(e) {
+            if (confirm("Remove all cached email addresses?")) {
+                $("#em-clear").prop("disabled", true);
+                chrome.storage.local.remove("em-addresses", function() {
+                    $("#em-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Import\" to open a CSV address book.");
+                });
+            }
+        });
         chrome.permissions.contains({
             origins: ["https://www.facebook.com/"]
         }, function(has) {
@@ -16,6 +84,7 @@ $(document).ready(function() {
                 $("#fb-sync").prop("disabled", true);
                 $("#fb-status").addClass("alert-danger").text("No permissions to get Facebook data.");
             }
+            $("#fb").fadeIn();
         });
         $("#fb-perms").click(function(e) {
             if ($("#fb-perms").hasClass("btn-danger")) {
@@ -67,9 +136,8 @@ $(document).ready(function() {
                             });
                         });
                         chrome.storage.local.set({"fb-friends": friends}, function() {
-                            $("#fb-perms, #fb-sync").prop("disabled", false);
+                            $("#fb-perms, #fb-sync, #fb-clear").prop("disabled", false);
                             $("#fb-status").removeClass("alert-warning").addClass("alert-success").text(friends.length + " friends saved.");
-                            $("#fb-clear").prop("disabled", false);
                         });
                     },
                     error: function(xhr, stat, err) {
@@ -77,14 +145,14 @@ $(document).ready(function() {
                         $("#fb-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to get friends.");
                     }
                 });
-            })
+            });
         });
         $("#fb-clear").click(function(e) {
             if (confirm("Remove all cached Facebook friends?")) {
                 $("#fb-clear").prop("disabled", true);
                 chrome.storage.local.remove("fb-friends", function() {
                     $("#fb-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Facebook.");
-                })
+                });
             }
         });
         chrome.permissions.contains({
@@ -103,6 +171,7 @@ $(document).ready(function() {
                 $("#tw-sync").prop("disabled", true);
                 $("#tw-status").addClass("alert-danger").text("No permissions to get Twitter data.");
             }
+            $("#tw").fadeIn();
         });
         $("#tw-perms").click(function(e) {
             if ($("#tw-perms").hasClass("btn-danger")) {
@@ -156,9 +225,8 @@ $(document).ready(function() {
                                     });
                                     if (resp.cursor === "0") {
                                         chrome.storage.local.set({"tw-follows": follows}, function() {
-                                            $("#tw-perms, #tw-sync").prop("disabled", false);
+                                            $("#tw-perms, #tw-sync, #tw-clear").prop("disabled", false);
                                             $("#tw-status").removeClass("alert-warning").addClass("alert-success").text(follows.length + " follows saved.");
-                                            $("#tw-clear").prop("disabled", false);
                                         });
                                     } else {
                                         iter(resp.cursor);
@@ -188,7 +256,7 @@ $(document).ready(function() {
                 $("#tw-clear").prop("disabled", true);
                 chrome.storage.local.remove("tw-follows", function() {
                     $("#tw-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Twitter.");
-                })
+                });
             }
         });
         chrome.permissions.contains({
@@ -207,6 +275,7 @@ $(document).ready(function() {
                 $("#gp-sync").prop("disabled", true);
                 $("#gp-status").addClass("alert-danger").text("No permissions to get Google+ data.");
             }
+            $("#gp").fadeIn();
         });
         $("#gp-perms").click(function(e) {
             if ($("#gp-perms").hasClass("btn-danger")) {
@@ -269,9 +338,8 @@ $(document).ready(function() {
                                     circled.push(obj);
                                 }
                                 chrome.storage.local.set({"gp-circled": circled}, function() {
-                                    $("#gp-perms, #gp-sync").prop("disabled", false);
+                                    $("#gp-perms, #gp-sync, #gp-clear").prop("disabled", false);
                                     $("#gp-status").removeClass("alert-warning").addClass("alert-success").text(circled.length + " circled users saved.");
-                                    $("#gp-clear").prop("disabled", false);
                                 });
                             },
                             error: function(xhr, stat, err) {
@@ -295,7 +363,7 @@ $(document).ready(function() {
                 $("#gp-clear").prop("disabled", true);
                 chrome.storage.local.remove("gp-circled", function() {
                     $("#gp-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Google+.");
-                })
+                });
             }
         });
     });

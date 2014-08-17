@@ -12,6 +12,12 @@ h1 img {
 .btn + .btn {
     margin-right: 5px;
 }
+#em, #fb, #tw, #gp {
+    display: none;
+}
+#em-file {
+    display: none;
+}
 #query {
     width: auto;
 }
