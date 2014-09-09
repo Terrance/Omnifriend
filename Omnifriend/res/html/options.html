@@ -65,7 +65,7 @@
                     <button id="fb-clear" class="btn btn-warning pull-right"><i class="fa fa-exclamation-triangle"></i> Clear</button>
                     <div class="btn-group pull-right">
                         <button id="fb-sync" class="btn btn-primary"><i class="fa fa-refresh"></i> Sync</button>
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <button id="fb-opts" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                             <span class="caret"></span>
                             <span class="sr-only">Sync options</span>
                         </button>
@@ -90,7 +90,16 @@
                 <h2>
                     <span><i class="fa fa-google-plus"></i> Google+</span>
                     <button id="gp-clear" class="btn btn-warning pull-right"><i class="fa fa-exclamation-triangle"></i> Clear</button>
-                    <button id="gp-sync" class="btn btn-primary pull-right"><i class="fa fa-refresh"></i> Sync</button>
+                    <div class="btn-group pull-right">
+                        <button id="gp-sync" class="btn btn-primary"><i class="fa fa-refresh"></i> Sync</button>
+                        <button id="gp-opts" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                            <span class="sr-only">Sync options</span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a id="gp-secondary" href><i class="fa fa-user"></i> Secondary account</a></li>
+                        </ul>
+                    </div>
                     <button id="gp-perms" class="btn pull-right"><i class="fa fa-key"></i> <span></span></button>
                 </h2>
                 <div id="gp-status" class="alert"></div>

@@ -105,7 +105,7 @@ $(document).ready(function() {
                 }, function(success) {
                     if (success) {
                         $("#fb-perms").removeClass("btn-danger").addClass("btn-success").find("span").text("Enabled");
-                        $("#fb-sync").prop("disabled", false);
+                        $("#fb-sync, #fb-opts").prop("disabled", false);
                         $("#fb-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Facebook.");
                     }
                 });
@@ -115,21 +115,21 @@ $(document).ready(function() {
                 }, function(success) {
                     if (success) {
                         $("#fb-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
-                        $("#fb-sync").prop("disabled", true);
+                        $("#fb-sync, #fb-opts").prop("disabled", true);
                         $("#fb-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Facebook.  Use \"Clear\" to remove existing friends.");
                     }
                 });
             }
         });
         $("#fb-sync").click(function(e) {
-            $("#fb-perms, #fb-sync").prop("disabled", true);
+            $("#fb-perms, #fb-sync, #fb-opts").prop("disabled", true);
             $("#fb-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Looking up user ID...");
             chrome.cookies.get({
                 url: "https://www.facebook.com",
                 name: "c_user"
             }, function(cookie) {
                 if (!cookie) {
-                    $("#fb-perms, #fb-sync").prop("disabled", false);
+                    $("#fb-perms, #fb-sync, #fb-opts").prop("disabled", false);
                     $("#fb-status").removeClass("alert-warning").addClass("alert-danger").text("No cookie found, are you logged in?");
                     return;
                 }
@@ -148,12 +148,12 @@ $(document).ready(function() {
                             });
                         });
                         chrome.storage.local.set({"fb-friends": friends}, function() {
-                            $("#fb-perms, #fb-sync, #fb-clear").prop("disabled", false);
+                            $("#fb-perms, #fb-sync, #fb-opts, #fb-clear").prop("disabled", false);
                             $("#fb-status").removeClass("alert-warning").addClass("alert-success").text(friends.length + " friends saved.");
                         });
                     },
                     error: function(xhr, stat, err) {
-                        $("#fb-perms, #fb-sync").prop("disabled", false);
+                        $("#fb-perms, #fb-sync, #fb-opts").prop("disabled", false);
                         $("#fb-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to get friends.");
                     }
                 });
@@ -167,7 +167,7 @@ $(document).ready(function() {
             function iter(i) {
                 if (i >= store["fb-friends"].length) {
                     chrome.storage.local.set({"fb-friends": store["fb-friends"]}, function() {
-                        $("#fb-perms, #fb-sync, #fb-clear").prop("disabled", false);
+                        $("#fb-perms, #fb-sync, #fb-opts, #fb-clear").prop("disabled", false);
                         $("#fb-status").removeClass("alert-warning").addClass("alert-success").text("All usernames saved.");
                     });
                     return;
@@ -324,7 +324,7 @@ $(document).ready(function() {
                 }
             } else {
                 $("#gp-perms").addClass("btn-danger").find("span").text("Disabled");
-                $("#gp-sync").prop("disabled", true);
+                $("#gp-sync, #gp-opts").prop("disabled", true);
                 $("#gp-status").addClass("alert-danger").text("No permissions to get Google+ data.");
             }
             $("#gp").fadeIn();
@@ -336,7 +336,7 @@ $(document).ready(function() {
                 }, function(success) {
                     if (success) {
                         $("#gp-perms").removeClass("btn-danger").addClass("btn-success").find("span").text("Enabled");
-                        $("#gp-sync").prop("disabled", false);
+                        $("#gp-sync, #gp-opts").prop("disabled", false);
                         $("#gp-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Google+.");
                     }
                 });
@@ -346,26 +346,28 @@ $(document).ready(function() {
                 }, function(success) {
                     if (success) {
                         $("#gp-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
-                        $("#gp-sync").prop("disabled", true);
+                        $("#gp-sync, #gp-opts").prop("disabled", true);
                         $("#gp-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Google+.  Use \"Clear\" to remove existing users.");
                     }
                 });
             }
         });
-        $("#gp-sync").click(function(e) {
-            $("#gp-perms, #gp-sync").prop("disabled", true);
-            $("#gp-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Looking up username...");
+        function gpSync(uid) {
+            var uidStr = isNaN(parseInt(uid)) ? "" : "/u/" + uid;
+            $("#gp-perms, #gp-sync, #gp-opts").prop("disabled", true);
+            $("#gp-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning")
+                .text("Looking up username" + (uidStr ? " for user " + uid : "") + "...");
             $.ajax({
                 // mobile site loads much faster than desktop
-                url: "https://plus.google.com/app/basic/home",
+                url: "https://plus.google.com" + uidStr + "/app/basic/home",
                 success: function(resp, stat, xhr) {
                     var username = $(".xQ a", resp)[1];
                     if (username) {
-                        username = $(username).attr("href").split("/")[3];
+                        username = $(username).attr("href").split("/")[uidStr ? 5 : 3];
                         $("#gp-status").text("Fetching circled users...");
                         var circled = [];
                         $.ajax({
-                            url: "https://plus.google.com/_/socialgraph/lookup/visible/?o=%5Bnull%2Cnull%2C\"" + username + "\"%5D",
+                            url: "https://plus.google.com" + uidStr + "/_/socialgraph/lookup/visible/?o=%5Bnull%2Cnull%2C\"" + username + "\"%5D",
                             dataType: "text",
                             success: function(resp, stat, xhr) {
                                 // response contains missing elements (e.g. "a",,,"b"), so fill with null entries
@@ -390,25 +392,33 @@ $(document).ready(function() {
                                     circled.push(obj);
                                 }
                                 chrome.storage.local.set({"gp-circled": circled}, function() {
-                                    $("#gp-perms, #gp-sync, #gp-clear").prop("disabled", false);
+                                    $("#gp-perms, #gp-sync, #gp-opts, #gp-clear").prop("disabled", false);
                                     $("#gp-status").removeClass("alert-warning").addClass("alert-success").text(circled.length + " circled users saved.");
                                 });
                             },
                             error: function(xhr, stat, err) {
-                                $("#gp-perms, #gp-sync").prop("disabled", false);
+                                $("#gp-perms, #gp-sync, #gp-opts").prop("disabled", false);
                                 $("#gp-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to get users.");
                             }
                         });
                     } else {
-                        $("#gp-perms, #gp-sync").prop("disabled", false);
+                        $("#gp-perms, #gp-sync, #gp-opts").prop("disabled", false);
                         $("#gp-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to get username, are you logged in?");
                     }
                 },
                 error: function(xhr, stat, err) {
-                    $("#gp-perms, #gp-sync").prop("disabled", false);
+                    $("#gp-perms, #gp-sync, #gp-opts").prop("disabled", false);
                     $("#gp-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to get username, are you logged in?");
                 }
             });
+        }
+        $("#gp-sync").click(function(e) {
+            gpSync();
+        });
+        $("#gp-secondary").click(function(e) {
+            e.preventDefault();
+            var uid = prompt("Enter the index of the signed in account (appears in various Google URLs as /u/X/ or ?authuser=X).", "0");
+            if (!isNaN(parseInt(uid))) gpSync(uid);
         });
         $("#gp-clear").click(function(e) {
             if (confirm("Remove all cached Google+ circles?")) {
