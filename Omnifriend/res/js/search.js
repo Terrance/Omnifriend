@@ -9,23 +9,17 @@ $(document).ready(function() {
         $("#networks-all, #networks li.active").show();
         $("#results").empty().show();
         var active = $("#networks li.active").attr("id").substr(9);
+        var regex = new RegExp(query.toLowerCase().split("").join(".*?"), "i");
         $(friends).each(function(i, friend) {
-            var index = friend.name.toLowerCase().indexOf(query.toLowerCase());
-            var match = index > -1;
-            if (!match && friend.user) match = friend.user.toLowerCase().indexOf(query.toLowerCase()) > -1;
-            if (!match && friend.id) friend.id.toLowerCase().indexOf(query.toLowerCase()) > -1;
-            if (match) {
+            var test = friend.name + " " + (friend.user ? friend.user : "") + " " + (friend.id ? friend.id : "");
+            if (test.match(regex)) {
+                var index = -1;
                 var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friend.label);
-                var name = $("<a/>").attr("href", friend.url);
-                if (index > -1) {
-                    name.append($("<span/>").text(friend.name.substr(0, index)))
-                            .append($("<strong/>").text(friend.name.substr(index, query.length)))
-                            .append($("<span/>").text(friend.name.substr(index + query.length)))
-                } else name.text(friend.name);
+                var name = $("<a/>").attr("href", friend.url).text(friend.name);
                 var user = (friend.user ? $("<small/>").text(friend.user) : null);
                 cell.append($("<h3/>")
                         .append($("<i/>").addClass("text-muted fa fa-" + friend.label)).append(" ")
-                        .append(name).append(" ").append(user)
+                        .append(name).append($("<br/>")).append(user ? user : "&nbsp;")
                     );
                 $("#networks-" + friend.label).show();
                 if (active !== "all" && active !== friend.label) cell.hide();

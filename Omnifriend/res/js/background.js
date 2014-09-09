@@ -25,20 +25,13 @@ chrome.omnibox.onInputStarted.addListener(function() {
 });
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
     var matches = [];
+    var regex = new RegExp(text.toLowerCase().split("").join(".*?"), "i");
     for (var i in friends) {
-        var source = friends[i].name.toLowerCase();
-        var index = friends[i].name.toLowerCase().indexOf(text.toLowerCase());
-        var match = index > -1;
-        if (!match && friends[i].user) match = friends[i].user.toLowerCase().indexOf(text.toLowerCase()) > -1;
-        if (!match && friends[i].id) friends[i].id.toLowerCase().indexOf(text.toLowerCase()) > -1;
-        if (match) {
-            var desc = friends[i].name;
-            if (index > -1) {
-                desc = friends[i].name.substr(0, index)
-                     + "<match>" + friends[i].name.substr(index, text.length) + "</match>"
-                     + friends[i].name.substr(index + text.length);
-            }
-            desc += "  <url>" + friends[i].src + (friends[i].user ? ": " + friends[i].user : "") + "</url>";
+        var test = friends[i].name + " " + (friends[i].user ? friends[i].user : "")
+                + " " + (friends[i].id ? friends[i].id : "");
+        if (test.match(regex)) {
+            var desc = friends[i].name + "  <url>" + friends[i].src
+                    + (friends[i].user ? ": " + friends[i].user : "") + "</url>";
             var match = {
                 content: friends[i].url,
                 description: desc.replace(/&/g, "&amp;")
