@@ -21,12 +21,15 @@ $(document).ready(function() {
                 try {
                     var contacts = $.csv.toArrays(csv);
                     $("#em-col-name, #em-col-email").empty();
+                    var nameSet = false;
                     for (var i in contacts[0]) {
                         var label = contacts[0][i];
                         $("#em-col-name, #em-col-email").append($("<option/>").text(label));
-                        if (["name", "full name"].indexOf(label.toLowerCase()) >= 0) $("#em-col-name").prop("selectedIndex", i);
-                        if (["email", "e-mail", "email address", "e-mail address", "e-mail 1 - value"].indexOf(label.toLowerCase()) >= 0)
-                            $("#em-col-email").prop("selectedIndex", i);
+                        if (label.match(/name/gi) && !nameSet) {
+                            $("#em-col-name").prop("selectedIndex", i);
+                            nameSet = true;
+                        }
+                        if (label.match(/e-?mail/gi)) $("#em-col-email option:last").prop("selected", true);
                     }
                     $("#em-setup").data("contacts", contacts).modal("show");
                 } catch (err) {
@@ -39,16 +42,23 @@ $(document).ready(function() {
         $("#em-submit").click(function(e) {
             var contacts = $("#em-setup").data("contacts");
             var name = $("#em-col-name").prop("selectedIndex");
-            var email = $("#em-col-email").prop("selectedIndex");
+            var email = [];
+            $("#em-col-email option").each(function(i, opt) {
+                if (opt.selected) email.push(i);
+            })
             var header = $("#em-row-header").prop("checked");
             var addresses = [];
             for (var i in contacts) {
-                if ((i == 0 && header) || !contacts[i][email]) continue;
-                addresses.push({
-                    name: contacts[i][name] ? contacts[i][name] : contacts[i][email],
-                    user: contacts[i][email],
-                    url: "mailto:" + contacts[i][email]
-                });
+                for (var j in email) {
+                    var thisName = contacts[i][name];
+                    var thisEmail = contacts[i][email[j]];
+                    if ((i == 0 && header) || !thisEmail.match(/^[^@]+@[^@]+\.[^@]+$/)) continue;
+                    addresses.push({
+                        name: thisName ? thisName : thisEmail,
+                        user: thisEmail,
+                        url: "mailto:" + thisEmail
+                    });
+                }
             }
             chrome.storage.local.set({"em-addresses": addresses}, function() {
                 $("#em-setup").modal("hide");
@@ -58,6 +68,8 @@ $(document).ready(function() {
         });
         $("#em-setup").on("hide.bs.modal", function(e) {
             $("#em-import").prop("disabled", false);
+            $("#em-file").val("");
+            $("#em-row-header").prop("checked", true);
             $("#em-status").removeClass("alert-warning").addClass("alert-info").html("Press \"Import\" to open a CSV address book.");
         });
         $("#em-clear").click(function(e) {

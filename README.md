@@ -9,7 +9,7 @@ Running from source
 
 This project requires the following libraries:
 
-* [Bootstrap](http://getboostrap.com)
+* [Bootstrap](http://getbootstrap.com)
 * [Font Awesome](http://fontawesome.io)
 * [jQuery](http://jquery.com)
 * [jquery-csv](http://code.google.com/p/jquery-csv)
@@ -19,6 +19,11 @@ Batteries are not included - the CSS and JavaScript files need to be placed in a
 
 Sync providers
 ==============
+
+Email
+-----
+
+Any CSV export of contacts can be imported.  Only name and email fields will be added.
 
 Facebook
 --------
