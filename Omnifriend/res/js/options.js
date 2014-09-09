@@ -163,7 +163,12 @@ $(document).ready(function() {
             if (confirm("Remove all cached Facebook friends?")) {
                 $("#fb-clear").prop("disabled", true);
                 chrome.storage.local.remove("fb-friends", function() {
-                    $("#fb-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Facebook.");
+                    $("#fb-status").removeClass("alert-danger");
+                    if ($("#fb-perms").hasClass("btn-danger")) {
+                        $("#fb-status").addClass("alert-danger").text("No permissions to get Facebook data.");
+                    } else {
+                        $("#fb-status").addClass("alert-info").text("Press \"Sync\" to update from Facebook.");
+                    }
                 });
             }
         });
@@ -267,7 +272,12 @@ $(document).ready(function() {
             if (confirm("Remove all cached Twitter follows?")) {
                 $("#tw-clear").prop("disabled", true);
                 chrome.storage.local.remove("tw-follows", function() {
-                    $("#tw-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Twitter.");
+                    $("#tw-status").removeClass("alert-danger");
+                    if ($("#tw-perms").hasClass("btn-danger")) {
+                        $("#tw-status").addClass("alert-danger").text("No permissions to get Twitter data.");
+                    } else {
+                        $("#tw-status").addClass("alert-info").text("Press \"Sync\" to update from Twitter.");
+                    }
                 });
             }
         });
@@ -374,7 +384,12 @@ $(document).ready(function() {
             if (confirm("Remove all cached Google+ circles?")) {
                 $("#gp-clear").prop("disabled", true);
                 chrome.storage.local.remove("gp-circled", function() {
-                    $("#gp-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Google+.");
+                    $("#gp-status").removeClass("alert-danger");
+                    if ($("#gp-perms").hasClass("btn-danger")) {
+                        $("#gp-status").addClass("alert-danger").text("No permissions to get Google+ data.");
+                    } else {
+                        $("#gp-status").addClass("alert-info").text("Press \"Sync\" to update from Google+.");
+                    }
                 });
             }
         });
