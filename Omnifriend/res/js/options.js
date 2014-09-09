@@ -159,6 +159,36 @@ $(document).ready(function() {
                 });
             });
         });
+        $("#fb-usernames").click(function(e) {
+            e.preventDefault();
+            if (!confirm("This may take a while if you have a lot of friends.  Don't close the tab until this completes.")) return;
+            $("#fb-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning");
+            var fails = 0;
+            function iter(i) {
+                if (i >= store["fb-friends"].length) {
+                    chrome.storage.local.set({"fb-friends": store["fb-friends"]}, function() {
+                        $("#fb-perms, #fb-sync, #fb-clear").prop("disabled", false);
+                        $("#fb-status").removeClass("alert-warning").addClass("alert-success").text("All usernames saved.");
+                    });
+                    return;
+                }
+                $("#fb-status").text("Fetching usernames... (" + i + " of " + store["fb-friends"].length
+                        + (fails ? ", " + fails + " failed" : "") + ")");
+                var friend = store["fb-friends"][i];
+                $.ajax({
+                    url: "https://graph.facebook.com/" + friend.id,
+                    success: function(resp, stat, err) {
+                        friend.user = resp.username;
+                        iter(i + 1);
+                    },
+                    error: function(xhr, stat, err) {
+                        fails++;
+                        iter(i + 1);
+                    }
+                });
+            };
+            iter(0);
+        });
         $("#fb-clear").click(function(e) {
             if (confirm("Remove all cached Facebook friends?")) {
                 $("#fb-clear").prop("disabled", true);

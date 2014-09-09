@@ -9,7 +9,10 @@ h1 img {
     vertical-align: top;
     margin-right: -5px;
 }
-.btn + .btn {
+.btn + .btn, .btn-group + .btn {
+    margin-right: 5px;
+}
+.btn-group.pull-right ul {
     margin-right: 5px;
 }
 #em, #fb, #tw, #gp {
