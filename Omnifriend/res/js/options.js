@@ -85,6 +85,7 @@ $(document).ready(function() {
             if (confirm("Remove all cached email addresses?")) {
                 $("#em-clear").prop("disabled", true);
                 chrome.storage.local.remove("em-addresses", function() {
+                    delete store["em-addresses"];
                     $("#em-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Import\" to open a CSV address book.");
                 });
             }
@@ -152,7 +153,7 @@ $(document).ready(function() {
                         $.each(resp.payload.entries, function(i, friend) {
                             var dupe = false;
                             for (var j in friends) {
-                                if (friends[j].uid === friend.uid.toString()) {
+                                if (friends[j].id === friend.uid.toString()) {
                                     dupe = true;
                                     break;
                                 }
@@ -209,6 +210,7 @@ $(document).ready(function() {
             if (confirm("Remove all cached Facebook friends?")) {
                 $("#fb-clear").prop("disabled", true);
                 chrome.storage.local.remove("fb-friends", function() {
+                    delete store["fb-friends"];
                     $("#fb-status").removeClass("alert-danger");
                     if ($("#fb-perms").hasClass("btn-danger")) {
                         $("#fb-status").addClass("alert-danger").text("No permissions to get Facebook data.");
@@ -332,6 +334,7 @@ $(document).ready(function() {
             if (confirm("Remove all cached Twitter follows?")) {
                 $("#tw-clear").prop("disabled", true);
                 chrome.storage.local.remove("tw-follows", function() {
+                    delete store["tw-follows"];
                     $("#tw-status").removeClass("alert-danger");
                     if ($("#tw-perms").hasClass("btn-danger")) {
                         $("#tw-status").addClass("alert-danger").text("No permissions to get Twitter data.");
@@ -455,6 +458,7 @@ $(document).ready(function() {
             if (confirm("Remove all cached Google+ circles?")) {
                 $("#gp-clear").prop("disabled", true);
                 chrome.storage.local.remove("gp-circled", function() {
+                    delete store["gp-circled"];
                     $("#gp-status").removeClass("alert-danger");
                     if ($("#gp-perms").hasClass("btn-danger")) {
                         $("#gp-status").addClass("alert-danger").text("No permissions to get Google+ data.");
