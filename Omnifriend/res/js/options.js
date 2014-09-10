@@ -247,14 +247,13 @@ $(document).ready(function() {
             $("#tw-perms, #tw-sync").prop("disabled", true);
             $("#tw-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Looking up username...");
             $.ajax({
-                // mobile site loads much faster than desktop
-                url: "https://mobile.twitter.com/settings",
+                url: "https://twitter.com/settings/account",
                 success: function(resp, stat, xhr) {
-                    if ($(".setting-value", resp).length > 14) {
-                        username = $($(".setting-value", resp)[14]).text().trim();
+                    var username = $(".DashboardProfileCard-screennameLink span", resp).text();
+                    if (username) {
                         $("#tw-status").text("Fetching followers for " + username + "...");
                         var follows = [{
-                            name: $($(".setting-value", resp)[7]).text().trim(),
+                            name: $(".DashboardProfileCard-name a", resp).text(),
                             user: username,
                             url: "https://twitter.com/" + username
                         }];
