@@ -15,6 +15,12 @@ h1 img {
 .btn-group.pull-right ul {
     margin-right: 5px;
 }
+#em-col-name, #em-col-email {
+    margin-bottom: 10px;
+}
+#em-setup .modal-footer {
+    margin-top: 0;
+}
 #em, #fb, #tw, #gp {
     display: none;
 }

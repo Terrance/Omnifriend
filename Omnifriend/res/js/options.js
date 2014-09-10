@@ -49,7 +49,7 @@ $(document).ready(function() {
                 if (opt.selected) email.push(i);
             })
             var header = $("#em-row-header").prop("checked");
-            var addresses = store["em-addresses"];
+            var addresses = store["em-addresses"] || [];
             for (var i in contacts) {
                 for (var j in email) {
                     var thisName = contacts[i][name];
