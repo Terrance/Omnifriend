@@ -47,13 +47,20 @@ $(document).ready(function() {
                 if (opt.selected) email.push(i);
             })
             var header = $("#em-row-header").prop("checked");
-            var addresses = [];
+            var addresses = store["em-addresses"];
             for (var i in contacts) {
                 for (var j in email) {
                     var thisName = contacts[i][name];
                     var thisEmail = contacts[i][email[j]];
                     if ((i == 0 && header) || !thisEmail.match(/^[^@]+@[^@]+\.[^@]+$/)) continue;
-                    addresses.push({
+                    var dupe = false;
+                    for (var k in addresses) {
+                        if (addresses[k].user.toLowerCase() === thisEmail.toLowerCase()) {
+                            dupe = true;
+                            break;
+                        }
+                    }
+                    if (!dupe) addresses.push({
                         name: thisName ? thisName : thisEmail,
                         user: thisEmail,
                         url: "mailto:" + thisEmail
@@ -139,9 +146,16 @@ $(document).ready(function() {
                     dataType: "text",
                     success: function(resp, stat, xhr) {
                         resp = JSON.parse(resp.substr(9));
-                        var friends = [];
+                        var friends = store["fb-friends"] || [];
                         $.each(resp.payload.entries, function(i, friend) {
-                            friends.push({
+                            var dupe = false;
+                            for (var j in friends) {
+                                if (friends[j].uid === friend.uid.toString()) {
+                                    dupe = true;
+                                    break;
+                                }
+                            }
+                            if (!dupe) friends.push({
                                 name: friend.names.shift() + (friend.names.length ? " (" + friend.names.join(", ") + ")" : ""),
                                 id: friend.uid.toString(),
                                 url: "https://www.facebook.com" + friend.path
@@ -252,18 +266,33 @@ $(document).ready(function() {
                     var username = $(".DashboardProfileCard-screennameLink span", resp).text();
                     if (username) {
                         $("#tw-status").text("Fetching followers for " + username + "...");
-                        var follows = [{
+                        var follows = store["tw-follows"] || [];
+                        var dupe = false;
+                        for (var i in follows) {
+                            if (follows[i].user.toLowerCase() === username.toLowerCase()) {
+                                dupe = true;
+                                break;
+                            }
+                        }
+                        if (!dupe) follows.push({
                             name: $(".DashboardProfileCard-name a", resp).text(),
                             user: username,
                             url: "https://twitter.com/" + username
-                        }];
+                        });
                         function iter(cursor) {
                             $.ajax({
                                 url: "https://twitter.com/" + username + "/following/users" + (cursor ? "?cursor=" + cursor : ""),
                                 success: function(resp, stat, xhr) {
                                     $(".ProfileNameTruncated-link", resp.items_html).each(function(i, follow) {
                                         var user = follow.href.split("/").pop();
-                                        follows.push({
+                                        var dupe = false;
+                                        for (var j in follows) {
+                                            if (follows[j].user.toLowerCase() === user.toLowerCase()) {
+                                                dupe = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!dupe) follows.push({
                                             name: follow.text.trim(),
                                             user: user,
                                             url: "https://twitter.com/" + user
@@ -276,7 +305,7 @@ $(document).ready(function() {
                                         });
                                     } else {
                                         iter(resp.cursor);
-                                        $("#tw-status").text("Fetching followers for " + username + "... (" + follows.length + " so far)");
+                                        $("#tw-status").text("Fetching followers for " + username + "... (" + follows.length + " total)");
                                     }
                                 },
                                 error: function(xhr, stat, err) {
@@ -364,7 +393,7 @@ $(document).ready(function() {
                     if (username) {
                         username = $(username).attr("href").split("/")[uidStr ? 5 : 3];
                         $("#gp-status").text("Fetching circled users...");
-                        var circled = [];
+                        var circled = store["gp-circled"] || [];
                         $.ajax({
                             url: "https://plus.google.com" + uidStr + "/_/socialgraph/lookup/visible/?o=%5Bnull%2Cnull%2C\"" + username + "\"%5D",
                             dataType: "text",
@@ -378,17 +407,18 @@ $(document).ready(function() {
                                 resp = JSON.parse(resp);
                                 for (var i in resp[0][2]) {
                                     var user = resp[0][2][i];
-                                    var obj = {
+                                    var dupe = false;
+                                    for (var j in circled) {
+                                        if (user[0][2] === circled[j].id) {
+                                            dupe = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!dupe) circled.push({
                                         name: user[2][0],
                                         id: user[0][2],
                                         url: "https://plus.google.com/" + user[0][2]
-                                    };
-                                    // extract alternative name
-                                    if (match = obj.name.match(/^(.*) \(([^\)]+)\)$/)) {
-                                        obj.name = match[1];
-                                        obj.user = match[2];
-                                    }
-                                    circled.push(obj);
+                                    });
                                 }
                                 chrome.storage.local.set({"gp-circled": circled}, function() {
                                     $("#gp-perms, #gp-sync, #gp-opts, #gp-clear").prop("disabled", false);
