@@ -2,7 +2,7 @@
     "name": "Omnifriend",
     "short_name": "Omnifriend",
     "description": "Quick access to friends' social profiles via the omnibox.",
-    "version": "1.0",
+    "version": "1.1",
     "author": "Ollie Terrance",
     "homepage_url": "https://github.com/OllieTerrance/Omnifriend",
     "omnibox": {

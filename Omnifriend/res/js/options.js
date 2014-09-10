@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    var manif = chrome.runtime.getManifest();
+    $("h1").append($("<span/>").text(" " + manif.name)).append($("<small/>").text(" v" + manif.version));
     chrome.storage.local.get(function(store) {
         if (store["em-addresses"] && store["em-addresses"].length) {
             $("#em-status").addClass("alert-success").text(store["em-addresses"].length + " addresses saved.");
