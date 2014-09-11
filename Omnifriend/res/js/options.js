@@ -222,7 +222,7 @@ $(document).ready(function() {
             }
         });
         chrome.permissions.contains({
-            origins: ["https://twitter.com/", "https://mobile.twitter.com/"]
+            origins: ["https://twitter.com/"]
         }, function(has) {
             if (has) {
                 $("#tw-perms").addClass("btn-success").find("span").text("Enabled");
@@ -242,7 +242,7 @@ $(document).ready(function() {
         $("#tw-perms").click(function(e) {
             if ($("#tw-perms").hasClass("btn-danger")) {
                 chrome.permissions.request({
-                    origins: ["https://twitter.com/", "https://mobile.twitter.com/"]
+                    origins: ["https://twitter.com/"]
                 }, function(success) {
                     if (success) {
                         $("#tw-perms").removeClass("btn-danger").addClass("btn-success").find("span").text("Enabled");
@@ -252,7 +252,7 @@ $(document).ready(function() {
                 });
             } else {
                 chrome.permissions.remove({
-                    origins: ["https://twitter.com/", "https://mobile.twitter.com/"]
+                    origins: ["https://twitter.com/"]
                 }, function(success) {
                     if (success) {
                         $("#tw-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
