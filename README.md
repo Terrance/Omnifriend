@@ -36,11 +36,6 @@ Facebook
 
 Friends are gathered from the AJAX typeahead API (used to suggest friends' names when tagging), sorted by edge rank.
 
-Twitter
--------
-
-The current session username is scraped from the settings page, then follows are repeatedly read by following cursors to retrieve the next page.
-
 Google+
 -------
 
@@ -50,3 +45,8 @@ Steam
 -----
 
 Friends are read from `/my/friends`, which redirects to the current user's friends list if logged in.
+
+Twitter
+-------
+
+The current session username is scraped from the settings page, then follows are repeatedly read by following cursors to retrieve the next page.

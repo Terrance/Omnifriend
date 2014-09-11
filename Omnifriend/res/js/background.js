@@ -5,8 +5,8 @@ var friends;
 chrome.omnibox.onInputStarted.addListener(function() {
     friends = [];
     chrome.storage.local.get(function(store) {
-        var networks = ["Email", "Facebook", "Twitter", "Google+", "Steam"];
-        ["em-addresses", "fb-friends", "tw-follows", "gp-circled", "st-friends"].map(function(key, i, arr) {
+        var networks = ["Email", "Facebook", "Google+", "Steam", "Twitter"];
+        ["em-addresses", "fb-friends", "gp-circled", "st-friends", "tw-follows"].map(function(key, i, arr) {
             if (store[key]) {
                 for (var j in store[key]) store[key][j].network = networks[i];
                 friends = friends.concat(store[key]);

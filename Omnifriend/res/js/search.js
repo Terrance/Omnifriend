@@ -48,16 +48,16 @@ $(document).ready(function() {
                 label: "facebook"
             },
             {
-                name: "Twitter",
-                label: "twitter"
-            },
-            {
                 name: "Google+",
                 label: "google-plus"
             },
             {
                 name: "Steam",
                 label: "steam"
+            },
+            {
+                name: "Twitter",
+                label: "twitter"
             }
         ];
         ["em-addresses", "fb-friends", "tw-follows", "gp-circled", "st-friends"].map(function(key, i, arr) {

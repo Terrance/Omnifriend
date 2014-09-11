@@ -19,9 +19,9 @@
     ],
     "optional_permissions": [
         "https://www.facebook.com/",
-        "https://twitter.com/",
         "https://plus.google.com/",
-        "https://steamcommunity.com/"
+        "https://steamcommunity.com/",
+        "https://twitter.com/"
     ],
     "icons": {
         "16": "res/img/icon-16.png",
