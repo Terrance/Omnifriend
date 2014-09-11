@@ -190,12 +190,13 @@ $(document).ready(function() {
                     return;
                 }
                 $("#fb-status").text("Fetching usernames... (" + i + " of " + store["fb-friends"].length
-                        + (fails ? ", " + fails + " failed" : "") + ")");
+                        + (fails ? ", " + fails + " skipped" : "") + ")");
                 var friend = store["fb-friends"][i];
                 $.ajax({
                     url: "https://graph.facebook.com/" + friend.id,
                     success: function(resp, stat, err) {
                         friend.user = resp.username;
+                        friend.url = "https://www.facebook.com/" + friend.user;
                         iter(i + 1);
                     },
                     error: function(xhr, stat, err) {

@@ -5,10 +5,10 @@ var friends;
 chrome.omnibox.onInputStarted.addListener(function() {
     friends = [];
     chrome.storage.local.get(function(store) {
-        var srcs = ["Email", "Facebook", "Twitter", "Google+"];
+        var networks = ["Email", "Facebook", "Twitter", "Google+"];
         ["em-addresses", "fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
             if (store[key]) {
-                for (var j in store[key]) store[key][j].src = srcs[i];
+                for (var j in store[key]) store[key][j].network = networks[i];
                 friends = friends.concat(store[key]);
             }
         });
@@ -27,13 +27,14 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
     var matches = [];
     var regex = new RegExp(text.toLowerCase().split("").join(".*?"), "i");
     for (var i in friends) {
-        var test = friends[i].name + " " + (friends[i].user ? friends[i].user : "")
-                + " " + (friends[i].id ? friends[i].id : "");
+        var friend = friends[i];
+        var test = friend.name + " " + (friend.user ? friend.user : "")
+                + " " + (friend.id ? friend.id : "") + " " + friend.network;
         if (test.match(regex)) {
-            var desc = friends[i].name + "  <url>" + friends[i].src
-                    + (friends[i].user ? ": " + friends[i].user : "") + "</url>";
+            var desc = friend.name + "  <url>" + friend.network
+                    + (friend.user ? ": " + friend.user : "") + "</url>";
             var match = {
-                content: friends[i].url,
+                content: friend.url,
                 description: desc.replace(/&/g, "&amp;")
             };
             matches.push(match);

@@ -17,6 +17,12 @@ This project requires the following libraries:
 Batteries are not included - the CSS and JavaScript files need to be placed in a `lib` folder with appropriate `css` and `js` subfolders (check the HTML file for where files are linked to).
 
 
+Fuzzy search
+============
+
+Search queries are tested against each friend in the format `<name> <username> <id> <network>`, and match if all the characters fit in the given order (e.g. initials, start of email address plus `email` for network, first name plus network).
+
+
 Sync providers
 ==============
 

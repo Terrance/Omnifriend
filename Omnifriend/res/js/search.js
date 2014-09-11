@@ -11,18 +11,22 @@ $(document).ready(function() {
         var active = $("#networks li.active").attr("id").substr(9);
         var regex = new RegExp(query.toLowerCase().split("").join(".*?"), "i");
         $(friends).each(function(i, friend) {
-            var test = friend.name + " " + (friend.user ? friend.user : "") + " " + (friend.id ? friend.id : "");
+            var test = friend.name + " " + (friend.user ? friend.user : "")
+                    + " " + (friend.id ? friend.id : "") + " " + friend.network.name;
             if (test.match(regex)) {
                 var index = -1;
-                var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friend.label);
-                var name = $("<a/>").attr("href", friend.url).text(friend.name);
-                var user = (friend.user ? $("<small/>").text(friend.user) : null);
-                cell.append($("<h3/>")
-                        .append($("<i/>").addClass("text-muted fa fa-" + friend.label)).append(" ")
-                        .append(name).append($("<br/>")).append(user ? user : "&nbsp;")
-                    );
-                $("#networks-" + friend.label).show();
-                if (active !== "all" && active !== friend.label) cell.hide();
+                var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friend.network.label)
+                        .append($("<h3/>")
+                            .append($("<a/>").attr("href", friend.url).text(friend.name))
+                            .append($("<br/>"))
+                            .append($("<small/>")
+                                .append($("<i/>").addClass("text-muted fa fa-" + friend.network.label))
+                                .append(" ")
+                                .append(friend.user ? friend.user : $("<em/>").text(friend.network.name))
+                            )
+                        );
+                $("#networks-" + friend.network.label).show();
+                if (active !== "all" && active !== friend.network.label) cell.hide();
                 $("#results").append(cell);
             }
         });
@@ -34,10 +38,27 @@ $(document).ready(function() {
         }
     }
     chrome.storage.local.get(function(store) {
-        var labels = ["envelope", "facebook", "twitter", "google-plus"];
+        var networks = [
+            {
+                name: "Email",
+                label: "envelope"
+            },
+            {
+                name: "Facebook",
+                label: "facebook"
+            },
+            {
+                name: "Twitter",
+                label: "twitter"
+            },
+            {
+                name: "Google+",
+                label: "google-plus"
+            },
+        ];
         ["em-addresses", "fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
             if (store[key]) {
-                for (var j in store[key]) store[key][j].label = labels[i];
+                for (var j in store[key]) store[key][j].network = networks[i];
                 friends = friends.concat(store[key]);
             }
         });
@@ -59,6 +80,12 @@ $(document).ready(function() {
             search($("#query").val());
         }, 300);
     }).focus();
+    $(window).on("hashchange", function(e) {
+        var query = decodeURIComponent(location.hash.substr(1));
+        if ($("#query").val() !== query) $("#query").val(query).focus().trigger("input");
+    }).keypress(function(e) {
+        if (e.keyCode === 13) $("#query").blur().focus();
+    });
     $("#networks li").click(function(e) {
         e.preventDefault();
         if ($(this).attr("id") === "networks-all") {
