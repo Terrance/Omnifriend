@@ -469,5 +469,98 @@ $(document).ready(function() {
                 });
             }
         });
+        chrome.permissions.contains({
+            origins: ["https://steamcommunity.com/"]
+        }, function(has) {
+            if (has) {
+                $("#st-perms").addClass("btn-success").find("span").text("Enabled");
+                if (store["st-friends"] && store["st-friends"].length) {
+                    $("#st-status").addClass("alert-success").text(store["st-friends"].length + " friends saved.");
+                } else {
+                    $("#st-status").addClass("alert-info").text("Press \"Sync\" to update from Steam.");
+                    $("#st-clear").prop("disabled", true);
+                }
+            } else {
+                $("#st-perms").addClass("btn-danger").find("span").text("Disabled");
+                $("#st-sync").prop("disabled", true);
+                $("#st-status").addClass("alert-danger").text("No permissions to get Steam data.");
+            }
+            $("#st").fadeIn();
+        });
+        $("#st-perms").click(function(e) {
+            if ($("#st-perms").hasClass("btn-danger")) {
+                chrome.permissions.request({
+                    origins: ["https://steamcommunity.com/"]
+                }, function(success) {
+                    if (success) {
+                        $("#st-perms").removeClass("btn-danger").addClass("btn-success").find("span").text("Enabled");
+                        $("#st-sync").prop("disabled", false);
+                        $("#st-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Steam.");
+                    }
+                });
+            } else {
+                chrome.permissions.remove({
+                    origins: ["https://steamcommunity.com/"]
+                }, function(success) {
+                    if (success) {
+                        $("#st-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
+                        $("#st-sync").prop("disabled", true);
+                        $("#st-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Steam.  Use \"Clear\" to remove existing friends.");
+                    }
+                });
+            }
+        });
+        $("#st-sync").click(function(e) {
+            $("#st-perms, #st-sync").prop("disabled", true);
+            $("#st-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Fetching friends...");
+            $.ajax({
+                url: "https://steamcommunity.com/my/friends",
+                success: function(resp, stat, xhr) {
+                    var friends = store["st-friends"] || [];
+                    $(".friendBlock.persona", resp).each(function(i, friend) {
+                        var id = $("input.friendCheckbox", friend).prop("name").slice(8, -1);
+                        var dupe = false;
+                        for (var j in friends) {
+                            if (friends[j].id === id) {
+                                dupe = true;
+                                break;
+                            }
+                        }
+                        if (dupe) return;
+                        var newFriend = {
+                            // name field contains child elements and unnecessary spacing
+                            name: $("div:nth-of-type(3)", friend).children().remove().end().text().trim(),
+                            id: id,
+                            url: $("a.friendBlockLinkOverlay", friend).prop("href")
+                        };
+                        var parts = newFriend.url.split("/");
+                        if (parts[parts.length - 2] === "id") newFriend.user = parts[parts.length - 1];
+                        friends.push(newFriend);
+                    });
+                    chrome.storage.local.set({"st-friends": friends}, function() {
+                        $("#st-perms, #st-sync, #st-clear").prop("disabled", false);
+                        $("#st-status").removeClass("alert-warning").addClass("alert-success").text(friends.length + " friends saved.");
+                    });
+                },
+                error: function(xhr, stat, err) {
+                    $("#st-perms, #st-sync").prop("disabled", false);
+                    $("#st-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to find friends, are you logged in?");
+                }
+            });
+        });
+        $("#st-clear").click(function(e) {
+            if (confirm("Remove all cached Steam friends?")) {
+                $("#st-clear").prop("disabled", true);
+                chrome.storage.local.remove("st-friends", function() {
+                    delete store["st-friends"];
+                    $("#st-status").removeClass("alert-danger");
+                    if ($("#st-perms").hasClass("btn-danger")) {
+                        $("#st-status").addClass("alert-danger").text("No permissions to get Steam data.");
+                    } else {
+                        $("#st-status").addClass("alert-info").text("Press \"Sync\" to update from Steam.");
+                    }
+                });
+            }
+        });
     });
 });

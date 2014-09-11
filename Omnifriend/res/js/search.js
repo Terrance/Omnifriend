@@ -55,8 +55,12 @@ $(document).ready(function() {
                 name: "Google+",
                 label: "google-plus"
             },
+            {
+                name: "Steam",
+                label: "steam"
+            }
         ];
-        ["em-addresses", "fb-friends", "tw-follows", "gp-circled"].map(function(key, i, arr) {
+        ["em-addresses", "fb-friends", "tw-follows", "gp-circled", "st-friends"].map(function(key, i, arr) {
             if (store[key]) {
                 for (var j in store[key]) store[key][j].network = networks[i];
                 friends = friends.concat(store[key]);
