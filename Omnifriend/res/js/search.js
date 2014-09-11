@@ -52,8 +52,12 @@ $(document).ready(function() {
         });
         search(location.hash ? decodeURIComponent(location.hash.substr(1)) : "");
     });
+    var timeout = -1;
     $("#query").on("input", function(e) {
-        search($(this).val());
+        if (timeout >= 0) clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            search($("#query").val());
+        }, 300);
     }).focus();
     $("#networks li").click(function(e) {
         e.preventDefault();
