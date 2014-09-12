@@ -41,6 +41,11 @@ Google+
 
 The current user ID is scraped from the profile link in the mobile menu, then circled users are gathered from the social graph API used when rendering the "your circles" page.
 
+Reddit
+------
+
+Usernames are pulled from the mates preference page.
+
 Steam
 -----
 

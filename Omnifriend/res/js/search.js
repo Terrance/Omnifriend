@@ -11,8 +11,8 @@ $(document).ready(function() {
         var active = $("#networks li.active").attr("id").substr(9);
         var regex = new RegExp(query.toLowerCase().split("").join(".*?"), "i");
         $(friends).each(function(i, friend) {
-            var test = friend.name + " " + (friend.user ? friend.user : "")
-                    + " " + (friend.id ? friend.id : "") + " " + friend.network.name;
+            var test = friend.name + (friend.user ? " " + friend.user : "")
+                    + (friend.id ? " " + friend.id : "") + " " + friend.network.name;
             if (test.match(regex)) {
                 var index = -1;
                 var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friend.network.label)
@@ -52,6 +52,10 @@ $(document).ready(function() {
                 label: "google-plus"
             },
             {
+                name: "Reddit",
+                label: "reddit"
+            },
+            {
                 name: "Steam",
                 label: "steam"
             },
@@ -60,7 +64,7 @@ $(document).ready(function() {
                 label: "twitter"
             }
         ];
-        ["em-addresses", "fb-friends", "tw-follows", "gp-circled", "st-friends"].map(function(key, i, arr) {
+        ["em-addresses", "fb-friends", "gp-circled", "rd-mates", "st-friends", "tw-follows"].map(function(key, i, arr) {
             if (store[key]) {
                 for (var j in store[key]) store[key][j].network = networks[i];
                 friends = friends.concat(store[key]);

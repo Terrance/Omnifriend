@@ -346,6 +346,94 @@ $(document).ready(function() {
             }
         });
         chrome.permissions.contains({
+            origins: ["https://ssl.reddit.com/"]
+        }, function(has) {
+            if (has) {
+                $("#rd-perms").addClass("btn-success").find("span").text("Enabled");
+                if (store["rd-mates"] && store["rd-mates"].length) {
+                    $("#rd-status").addClass("alert-success").text(store["rd-mates"].length + " friends saved.");
+                } else {
+                    $("#rd-status").addClass("alert-info").text("Press \"Sync\" to update from Reddit.");
+                    $("#rd-clear").prop("disabled", true);
+                }
+            } else {
+                $("#rd-perms").addClass("btn-danger").find("span").text("Disabled");
+                $("#rd-sync").prop("disabled", true);
+                $("#rd-status").addClass("alert-danger").text("No permissions to get Reddit data.");
+            }
+            $("#rd").fadeIn();
+        });
+        $("#rd-perms").click(function(e) {
+            if ($("#rd-perms").hasClass("btn-danger")) {
+                chrome.permissions.request({
+                    origins: ["https://ssl.reddit.com/"]
+                }, function(success) {
+                    if (success) {
+                        $("#rd-perms").removeClass("btn-danger").addClass("btn-success").find("span").text("Enabled");
+                        $("#rd-sync").prop("disabled", false);
+                        $("#rd-status").removeClass("alert-danger").addClass("alert-info").text("Press \"Sync\" to update from Reddit.");
+                    }
+                });
+            } else {
+                chrome.permissions.remove({
+                    origins: ["https://ssl.reddit.com/"]
+                }, function(success) {
+                    if (success) {
+                        $("#rd-perms").removeClass("btn-success").addClass("btn-danger").find("span").text("Disabled");
+                        $("#rd-sync").prop("disabled", true);
+                        $("#rd-status").removeClass("alert-info").addClass("alert-danger").text("Disabled access to Reddit.  Use \"Clear\" to remove existing mates.");
+                    }
+                });
+            }
+        });
+        $("#rd-sync").click(function(e) {
+            $("#rd-perms, #rd-sync").prop("disabled", true);
+            $("#rd-status").removeClass("alert-info alert-danger alert-success").addClass("alert-warning").text("Fetching mates...");
+            $.ajax({
+                url: "https://ssl.reddit.com/prefs/friends/",
+                success: function(resp, stat, xhr) {
+                    var mates = store["st-mates"] || [];
+                    $(".user", resp).each(function(i, mate) {
+                        // remove karma score from label
+                        var name = $(mate).text().split("\xA0")[0];
+                        var dupe = false;
+                        for (var j in mates) {
+                            if (mates[j].name === name) {
+                                dupe = true;
+                                break;
+                            }
+                        }
+                        if (!dupe) mates.push({
+                            name: name,
+                            url: "https://www.reddit.com/user/" + name
+                        });
+                    });
+                    chrome.storage.local.set({"rd-mates": mates}, function() {
+                        $("#rd-perms, #rd-sync, #rd-clear").prop("disabled", false);
+                        $("#rd-status").removeClass("alert-warning").addClass("alert-success").text(mates.length + " mates saved.");
+                    });
+                },
+                error: function(xhr, stat, err) {
+                    $("#rd-perms, #rd-sync").prop("disabled", false);
+                    $("#rd-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to find mates, are you logged in?");
+                }
+            });
+        });
+        $("#rd-clear").click(function(e) {
+            if (confirm("Remove all cached Reddit mates?")) {
+                $("#rd-clear").prop("disabled", true);
+                chrome.storage.local.remove("rd-mates", function() {
+                    delete store["rd-mates"];
+                    $("#rd-status").removeClass("alert-danger");
+                    if ($("#rd-perms").hasClass("btn-danger")) {
+                        $("#rd-status").addClass("alert-danger").text("No permissions to get Reddit data.");
+                    } else {
+                        $("#rd-status").addClass("alert-info").text("Press \"Sync\" to update from Reddit.");
+                    }
+                });
+            }
+        });
+        chrome.permissions.contains({
             origins: ["https://steamcommunity.com/"]
         }, function(has) {
             if (has) {

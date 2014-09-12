@@ -20,6 +20,7 @@
     "optional_permissions": [
         "https://www.facebook.com/",
         "https://plus.google.com/",
+        "https://ssl.reddit.com/",
         "https://steamcommunity.com/",
         "https://twitter.com/"
     ],

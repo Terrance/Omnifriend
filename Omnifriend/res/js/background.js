@@ -5,8 +5,8 @@ var friends;
 chrome.omnibox.onInputStarted.addListener(function() {
     friends = [];
     chrome.storage.local.get(function(store) {
-        var networks = ["Email", "Facebook", "Google+", "Steam", "Twitter"];
-        ["em-addresses", "fb-friends", "gp-circled", "st-friends", "tw-follows"].map(function(key, i, arr) {
+        var networks = ["Email", "Facebook", "Google+", "Reddit", "Steam", "Twitter"];
+        ["em-addresses", "fb-friends", "gp-circled", "rd-mates", "st-friends", "tw-follows"].map(function(key, i, arr) {
             if (store[key]) {
                 for (var j in store[key]) store[key][j].network = networks[i];
                 friends = friends.concat(store[key]);
@@ -28,8 +28,8 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
     var regex = new RegExp(text.toLowerCase().split("").join(".*?"), "i");
     for (var i in friends) {
         var friend = friends[i];
-        var test = friend.name + " " + (friend.user ? friend.user : "")
-                + " " + (friend.id ? friend.id : "") + " " + friend.network;
+        var test = friend.name + (friend.user ? " " + friend.user : "")
+                + (friend.id ? " " + friend.id : "") + " " + friend.network;
         if (test.match(regex)) {
             var desc = friend.name + "  <url>" + friend.network
                     + (friend.user ? ": " + friend.user : "") + "</url>";
