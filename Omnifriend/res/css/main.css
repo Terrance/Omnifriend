@@ -27,6 +27,10 @@ h1 img {
 #em-file {
     display: none;
 }
+.star {
+    display: none;
+    cursor: pointer;
+}
 #query {
     width: auto;
 }

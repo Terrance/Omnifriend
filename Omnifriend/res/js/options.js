@@ -192,6 +192,7 @@ $(document).ready(function() {
                 $("#fb-status").text("Fetching usernames... (" + i + " of " + store["fb-friends"].length
                         + (fails ? ", " + fails + " skipped" : "") + ")");
                 var friend = store["fb-friends"][i];
+                if (friend.user) return iter(i + 1);
                 $.ajax({
                     url: "https://graph.facebook.com/" + friend.id,
                     success: function(resp, stat, err) {
@@ -351,7 +352,7 @@ $(document).ready(function() {
             if (has) {
                 $("#rd-perms").addClass("btn-success").find("span").text("Enabled");
                 if (store["rd-mates"] && store["rd-mates"].length) {
-                    $("#rd-status").addClass("alert-success").text(store["rd-mates"].length + " friends saved.");
+                    $("#rd-status").addClass("alert-success").text(store["rd-mates"].length + " mates saved.");
                 } else {
                     $("#rd-status").addClass("alert-info").text("Press \"Sync\" to update from Reddit.");
                     $("#rd-clear").prop("disabled", true);
