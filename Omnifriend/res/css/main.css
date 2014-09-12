@@ -27,12 +27,19 @@ h1 img {
 #em-file {
     display: none;
 }
+#search-settings {
+    margin: 25px 0;
+}
+#search-settings h2 {
+    margin: 5px 0 15px;
+}
 .star {
     display: none;
     cursor: pointer;
 }
 #query {
     width: auto;
+    text-transform: lowercase;
 }
 #results {
     margin-bottom: 30px;

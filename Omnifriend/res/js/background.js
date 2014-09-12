@@ -2,6 +2,10 @@ chrome.runtime.onInstalled.addListener(function (object) {
     chrome.tabs.create({url: chrome.runtime.getURL("/res/html/options.html")});
 });
 var friends;
+var searchOpts = {
+    fuzzy: true,
+    starredOnly: false
+};
 chrome.omnibox.onInputStarted.addListener(function() {
     friends = [];
     chrome.storage.local.get(function(store) {
@@ -21,16 +25,21 @@ chrome.omnibox.onInputStarted.addListener(function() {
             }
             return (m === n ? 0 : (m > n ? 1 : -1));
         });
+        for (var x in searchOpts) {
+            if (x in store.search) searchOpts[x] = store.search[x];
+        }
     });
 });
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
+    text = text.toLowerCase();
     var matches = [];
     var regex = new RegExp(text.toLowerCase().split("").join(".*?"), "i");
     for (var i in friends) {
         var friend = friends[i];
         var test = friend.name + (friend.user ? " " + friend.user : "")
                 + (friend.id ? " " + friend.id : "") + " " + friend.network;
-        if (test.match(regex)) {
+        if (searchOpts.fuzzy && test.match(regex) || !searchOpts.fuzzy && test.toLowerCase().indexOf(text) >= 0) {
+            if (searchOpts.starredOnly && !friends[i].star) continue;
             var desc = friend.name + "  <url>" + friend.network
                     + (friend.user ? ": " + friend.user : "") + "</url>";
             var match = {

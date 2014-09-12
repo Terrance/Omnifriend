@@ -2,6 +2,7 @@ $(document).ready(function() {
     chrome.storage.local.get(function(store) {
         var friends = [];
         function search(query) {
+            query = query.toLowerCase();
             location.hash = "#" + encodeURIComponent(query);
             document.title = "Search" + (query ? ": " + query : "");
             $("#query").val(query);
@@ -14,7 +15,7 @@ $(document).ready(function() {
             $(friends).each(function(i, friend) {
                 var test = friend.name + (friend.user ? " " + friend.user : "")
                         + (friend.id ? " " + friend.id : "") + " " + friend.network.name;
-                if (test.match(regex)) {
+                if (store.search.fuzzy && test.match(regex) || !store.search.fuzzy && test.toLowerCase().indexOf(query) >= 0) {
                     var index = -1;
                     var star = $("<i/>").addClass("fa fa-star" + (friend.star ? "" : "-o") + " star text-muted");
                     if (friend.star) star.show().addClass("text-muted");

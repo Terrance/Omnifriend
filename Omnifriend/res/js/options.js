@@ -651,5 +651,17 @@ $(document).ready(function() {
                 });
             }
         });
+        var searchOpts = {
+            fuzzy: true,
+            starredOnly: false
+        };
+        store.search = $.extend({}, searchOpts, store.search);
+        chrome.storage.local.set({search: store.search});
+        $("#search-settings input").each(function(i, input) {
+            $(input).prop("checked", store.search[$(this).prop("id").substr(7)]);
+        }).change(function(e) {
+            store.search[$(this).prop("id").substr(7)] = $(this).prop("checked");
+            chrome.storage.local.set({search: store.search});
+        });
     });
 });
