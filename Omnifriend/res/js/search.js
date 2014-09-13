@@ -2,10 +2,10 @@ $(document).ready(function() {
     chrome.storage.local.get(function(store) {
         var friends = [];
         function search(query) {
-            query = query.toLowerCase();
             location.hash = "#" + encodeURIComponent(query);
             document.title = "Search" + (query ? ": " + query : "");
             $("#query").val(query);
+            query = query.toLowerCase();
             var matches = [];
             $("#networks li").hide();
             $("#networks-all, #networks li.active").show();
@@ -17,19 +17,25 @@ $(document).ready(function() {
                         + (friend.id ? " " + friend.id : "") + " " + friend.network.name;
                 if (store.search.fuzzy && test.match(regex) || !store.search.fuzzy && test.toLowerCase().indexOf(query) >= 0) {
                     var index = -1;
-                    var star = $("<i/>").addClass("fa fa-star" + (friend.star ? "" : "-o") + " star text-muted");
+                    var star = $("<i/>").addClass("fa fa-star" + (friend.star ? "" : "-o") + " hover-btn text-muted")
+                            .attr("title", "Toggle star");
                     if (friend.star) star.show().addClass("text-muted");
+                    var node = $("<h3/>")
+                            .append($("<a/>").attr("href", friend.url).text(friend.name))
+                            .append(" ").append(star);
+                    if (store.search.editControls) {
+                        var edit = $("<i/>").addClass("fa fa-pencil hover-btn text-muted").attr("title", "Rename");
+                        var del = $("<i/>").addClass("fa fa-trash-o hover-btn text-muted").attr("title", "Delete");
+                        node.append(" ").append(edit).append(" ").append(del);
+                    }
+                    node.append($("<br/>"))
+                            .append($("<small/>")
+                                .append($("<i/>").addClass("text-muted fa fa-" + friend.network.label))
+                                .append(" ").append(friend.user ? friend.user : $("<em/>").text(friend.network.name))
+                            );
                     var cell = $("<div/>").addClass("col-lg-4 col-sm-6 friend-" + friend.network.label)
                             .addClass(friend.star ? " friend-starred" : "")
-                            .append($("<h3/>")
-                                .append($("<a/>").attr("href", friend.url).text(friend.name))
-                                .append(" ").append(star)
-                                .append($("<br/>"))
-                                .append($("<small/>")
-                                    .append($("<i/>").addClass("text-muted fa fa-" + friend.network.label))
-                                    .append(" ").append(friend.user ? friend.user : $("<em/>").text(friend.network.name))
-                                )
-                            );
+                            .append(node);
                     star.click(function(e) {
                         friend.star = !friend.star;
                         var toSet = {};
@@ -42,11 +48,49 @@ $(document).ready(function() {
                         $(this).removeClass("text-muted");
                     }).mouseout(function(e) {
                         $(this).addClass("text-muted");
-                    })
+                    });
+                    if (store.search.editControls) {
+                        edit.click(function(e) {
+                            var name = prompt("Enter a new name for this friend:", friend.name);
+                            if (name && name !== friend.name) {
+                                friend.name = name;
+                                var toSet = {};
+                                toSet[friend.network.key] = store[friend.network.key];
+                                chrome.storage.local.set(toSet);
+                                $("h3 a", cell).text(name);
+                            }
+                        }).mouseover(function(e) {
+                            $(this).removeClass("text-muted");
+                        }).mouseout(function(e) {
+                            $(this).addClass("text-muted");
+                        });
+                        del.click(function(e) {
+                            if (confirm("Remove " + friend.name + " from your cached friends?")) {
+                                var cached = store[friend.network.key];
+                                cached.splice(cached.indexOf(friend), 1);
+                                var toSet = {};
+                                toSet[friend.network.key] = cached;
+                                chrome.storage.local.set(toSet);
+                                cell.remove();
+                            }
+                        }).mouseover(function(e) {
+                            $(this).removeClass("text-muted");
+                        }).mouseout(function(e) {
+                            $(this).addClass("text-muted");
+                        });
+                    }
                     cell.mouseover(function(e) {
                         star.show();
+                        if (store.search.editControls) {
+                            edit.show();
+                            del.show();
+                        }
                     }).mouseout(function(e) {
                         if (!friend.star) star.hide();
+                        if (store.search.editControls) {
+                            edit.hide();
+                            del.hide();
+                        }
                     });
                     if (friend.star) $("#networks-starred").show();
                     $("#networks-" + friend.network.label).show();

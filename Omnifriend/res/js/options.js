@@ -653,7 +653,8 @@ $(document).ready(function() {
         });
         var searchOpts = {
             fuzzy: true,
-            starredOnly: false
+            starredOnly: false,
+            editControls: true
         };
         store.search = $.extend({}, searchOpts, store.search);
         chrome.storage.local.set({search: store.search});

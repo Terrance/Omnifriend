@@ -4,7 +4,8 @@ chrome.runtime.onInstalled.addListener(function (object) {
 var friends;
 var searchOpts = {
     fuzzy: true,
-    starredOnly: false
+    starredOnly: false,
+    editControls: true
 };
 chrome.omnibox.onInputStarted.addListener(function() {
     friends = [];

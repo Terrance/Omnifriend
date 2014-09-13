@@ -33,13 +33,12 @@ h1 img {
 #search-settings h2 {
     margin: 5px 0 15px;
 }
-.star {
+.hover-btn {
     display: none;
     cursor: pointer;
 }
 #query {
     width: auto;
-    text-transform: lowercase;
 }
 #results {
     margin-bottom: 30px;
