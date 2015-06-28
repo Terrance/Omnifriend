@@ -590,10 +590,11 @@ $(document).ready(function() {
                             user: username,
                             url: "https://twitter.com/" + username
                         });
-                        function iter(cursor) {
+                        function iter(min) {
                             $.ajax({
-                                url: "https://twitter.com/" + username + "/following/users" + (cursor ? "?cursor=" + cursor : ""),
+                                url: "https://twitter.com/" + username + "/following/users?max_position=" + min,
                                 success: function(resp, stat, xhr) {
+                                    console.log(min, resp);
                                     $(".ProfileNameTruncated-link", resp.items_html).each(function(i, follow) {
                                         var user = follow.href.split("/").pop();
                                         var dupe = false;
@@ -609,14 +610,14 @@ $(document).ready(function() {
                                             url: "https://twitter.com/" + user
                                         });
                                     });
-                                    if (resp.cursor === "0") {
+                                    if (resp.has_more_items) {
+                                        iter(resp.min_position);
+                                        $("#tw-status").text("Fetching followers for " + username + "... (" + follows.length + " total)");
+                                    } else {
                                         chrome.storage.local.set({"tw-follows": follows}, function() {
                                             $("#tw-perms, #tw-sync, #tw-clear").prop("disabled", false);
                                             $("#tw-status").removeClass("alert-warning").addClass("alert-success").text(follows.length + " follows saved.");
                                         });
-                                    } else {
-                                        iter(resp.cursor);
-                                        $("#tw-status").text("Fetching followers for " + username + "... (" + follows.length + " total)");
                                     }
                                 },
                                 error: function(xhr, stat, err) {
@@ -625,7 +626,7 @@ $(document).ready(function() {
                                 }
                             });
                         }
-                        iter();
+                        iter("-1");
                     } else {
                         $("#tw-perms, #tw-sync").prop("disabled", false);
                         $("#tw-status").removeClass("alert-warning").addClass("alert-danger").text("Failed to get username, are you logged in?");
