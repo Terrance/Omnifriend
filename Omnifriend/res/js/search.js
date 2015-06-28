@@ -8,7 +8,7 @@ $(document).ready(function() {
             query = query.toLowerCase();
             var matches = [];
             $("#networks li").hide();
-            $("#networks-all, #networks li.active").show();
+            $("#networks-all, #networks-starred, #networks li.active").show();
             $("#results").empty().show();
             var active = $("#networks li.active").attr("id").substr(9);
             var regex = new RegExp(query.toLowerCase().split("").join(".*?"), "i");
@@ -92,7 +92,6 @@ $(document).ready(function() {
                             del.hide();
                         }
                     });
-                    if (friend.star) $("#networks-starred").show();
                     $("#networks-" + friend.network.label).show();
                     if (active !== "all" && active !== friend.network.label) cell.hide();
                     if (active === "starred" && friend.star) cell.show();
