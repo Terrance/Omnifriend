@@ -1,5 +1,5 @@
-chrome.runtime.onInstalled.addListener(function (object) {
-    chrome.tabs.create({url: chrome.runtime.getURL("/res/html/options.html")});
+chrome.runtime.onInstalled.addListener(function(details) {
+    if (details.reason === "install") chrome.tabs.create({url: chrome.runtime.getURL("/res/html/options.html")});
 });
 var friends;
 var searchOpts = {
